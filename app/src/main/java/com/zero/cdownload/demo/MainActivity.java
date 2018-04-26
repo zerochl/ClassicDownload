@@ -5,20 +5,8 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.zero.cdownload.CDownload;
 import com.zero.cdownload.listener.CDownloadListener;
-
-import io.reactivex.functions.Consumer;
-import zlc.season.rxdownload3.RxDownload;
-import zlc.season.rxdownload3.core.Downloading;
-import zlc.season.rxdownload3.core.Failed;
-import zlc.season.rxdownload3.core.Status;
-import zlc.season.rxdownload3.core.Succeed;
-
-import static android.Manifest.permission.INTERNET;
-import static android.Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
 //            return;
 //        }
 //        LeakCanary.install(this);
-        requestPermission(WRITE_EXTERNAL_STORAGE);
 //        requestPermission(MOUNT_UNMOUNT_FILESYSTEMS);
 //        requestPermission(INTERNET);
 
@@ -59,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 //                });
 //                RxDownload.INSTANCE.start("http://p5.qhimg.com/dr/72__/t01a362a049573708ae.png").subscribe();
 
-                CDownload.getInstance().create("http://p5.qhimg.com/dr/72__/t01a362a049573708ae.png", new CDownloadListener() {
+                CDownload.getInstance().create("https://assets.mimikko.cn/201804261844/f68dbc99fc8d3edde679ec14ef62df7a/servantVoice/a08605288baa86aba138563fc4da8c84.zip", new CDownloadListener() {
                     @Override
                     public void onPreStart() {
                         Log.e("HongLi", "onPreStart");
@@ -85,22 +72,10 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("HongLi", "onCancel");
                     }
                 });
-                CDownload.getInstance().start("http://p5.qhimg.com/dr/72__/t01a362a049573708ae.png");
+                CDownload.getInstance().start("https://assets.mimikko.cn/201804261844/f68dbc99fc8d3edde679ec14ef62df7a/servantVoice/a08605288baa86aba138563fc4da8c84.zip");
 
             }
         }, 5000);
 
-    }
-    private void requestPermission(String permission) {
-        new RxPermissions(this)
-                .request(permission)
-                .subscribe(new Consumer<Boolean>() {
-                    @Override
-                    public void accept(Boolean aBoolean) throws Exception {
-                        if (!aBoolean) {
-                            finish();
-                        }
-                    }
-                });
     }
 }

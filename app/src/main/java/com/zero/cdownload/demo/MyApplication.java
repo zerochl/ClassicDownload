@@ -4,10 +4,8 @@ import android.app.Application;
 
 import com.zero.cdownload.CDownload;
 import com.zero.cdownload.config.CDownloadConfig;
-
-import zlc.season.rxdownload3.core.DownloadConfig;
-import zlc.season.rxdownload3.extension.ApkInstallExtension;
-import zlc.season.rxdownload3.extension.ApkOpenExtension;
+import com.zero.cdownload.config.ConnectConfig;
+import com.zero.cdownload.config.ThreadPoolConfig;
 
 /**
  * @author caizhixing
@@ -19,18 +17,10 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        DownloadConfig.Builder builder = DownloadConfig.Builder.Companion.create(this)
-                .enableDb(false)
-//                .setDbActor(new CustomSqliteActor(this))
-                .enableService(false)
-                .enableNotification(false)
-                .addExtension(ApkInstallExtension.class)
-                .addExtension(ApkOpenExtension.class);
-
-        DownloadConfig.INSTANCE.init(builder);
-
-        CDownloadConfig downloadConfig = CDownloadConfig.build();
-        downloadConfig.setDiskCachePath("/sdcard/Download");
+        CDownloadConfig downloadConfig = CDownloadConfig.build()
+                .setDiskCachePath("/sdcard/mimikko/download")
+                .setConnectConfig(ConnectConfig.build().setConnectTimeOut(10000).setReadTimeOut(20000))
+                .setIoThreadPoolConfig(ThreadPoolConfig.build().setCorePoolSize(4).setMaximumPoolSize(100).setKeepAliveTime(60));
 
         CDownload.getInstance().init(downloadConfig);
     }

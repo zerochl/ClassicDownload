@@ -13,12 +13,14 @@ import java.net.URLEncoder;
  */
 
 public class PathUtil {
-    public static String getLocalFilePath(String netUrl, String cacheFolder) {
+    public static String getLocalFilePath(String netUrl, String cacheFolder, boolean needMd5Name) {
         if (TextUtils.isEmpty(netUrl) || TextUtils.isEmpty(cacheFolder)) {
             Log.e("HongLi", "in getLocalFilePath netUrl or cacheFolder is empty.");
             return "";
         }
-        return FileUtil.getFolderByPath(cacheFolder).getAbsolutePath() + "/" + MD5Util.getMD5String(getUTF8(netUrl));
+
+        String fileName = needMd5Name ? MD5Util.getMD5String(getUTF8(netUrl)) : FileUtil.getName(netUrl);
+        return FileUtil.getFolderByPath(cacheFolder).getAbsolutePath() + "/" + fileName;
     }
 
     /**

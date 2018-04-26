@@ -20,9 +20,8 @@ import java.util.Date;
  */
 
 public class FileUtil {
-    public static String getFileName(String path) {
-        int index = path.lastIndexOf("/");
-        return path.substring(index + 1);
+    public static String getName(String path) {
+        return new File(path).getName();
     }
 
     /**

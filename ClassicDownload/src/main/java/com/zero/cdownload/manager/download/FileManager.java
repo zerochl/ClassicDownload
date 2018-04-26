@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.zero.cdownload.config.CDownloadConfig;
-import com.zero.cdownload.config.ConnectConfig;
 import com.zero.cdownload.constants.ConfigConstant;
 import com.zero.cdownload.entity.CDownloadTaskEntity;
 import com.zero.cdownload.util.DownloadCheckUtil;
@@ -32,13 +31,14 @@ public class FileManager {
     private static int readTimeOut = ConfigConstant.TIME_DEFAULT_READ_OUT;
 
     private static int bufferSize = ConfigConstant.BUFFER_DEFAULT_DOWNLOAD;
-    private static String cachePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/com/zero/cdownload/";
+    private static String cachePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/com/zero/cdownload";
 
     public static void init(CDownloadConfig downloadConfig) {
+        HTTPSTrustManager.allowAllSSL();
         if (downloadConfig != null && downloadConfig.getConnectConfig() != null) {
-            connectTimeOut = downloadConfig.getConnectConfig().getConnectTimeOut();
-            readTimeOut = downloadConfig.getConnectConfig().getReadTimeOut();
-            bufferSize = downloadConfig.getConnectConfig().getReadBufferSize();
+            connectTimeOut = downloadConfig.getConnectConfig().getConnectTimeOut() != 0 ? downloadConfig.getConnectConfig().getConnectTimeOut() : ConfigConstant.TIME_DEFAULT_CONNECT_OUT;
+            readTimeOut = downloadConfig.getConnectConfig().getReadTimeOut() != 0 ? downloadConfig.getConnectConfig().getReadTimeOut() : ConfigConstant.TIME_DEFAULT_READ_OUT;
+            bufferSize = downloadConfig.getConnectConfig().getReadBufferSize() != 0 ? downloadConfig.getConnectConfig().getReadBufferSize() : ConfigConstant.BUFFER_DEFAULT_DOWNLOAD;
         }
         if (downloadConfig != null && !TextUtils.isEmpty(downloadConfig.getDiskCachePath())) {
             cachePath = downloadConfig.getDiskCachePath();
@@ -51,8 +51,9 @@ public class FileManager {
             return;
         }
         taskEntity.getDownloadListener().onPreStart();
-        String localFilePath = PathUtil.getLocalFilePath(taskEntity.getUrl(), cachePath);
-        String templocalFilePath = PathUtil.getLocalFilePath(taskEntity.getUrl(), cachePath + ConfigConstant.DEFAULT_TEMP_FOLDER_NAME);
+        String localFilePath = PathUtil.getLocalFilePath(taskEntity.getUrl(), cachePath, taskEntity.isNeedMD5Name());
+        String templocalFilePath = PathUtil.getLocalFilePath(taskEntity.getUrl(), cachePath + "/" + ConfigConstant.DEFAULT_TEMP_FOLDER_NAME, taskEntity.isNeedMD5Name());
+        Log.e("HongLi", "templocalFilePath:" + templocalFilePath);
         if (FileUtil.isExist(localFilePath) && DownloadCheckUtil.checkFileDownloadOk(taskEntity.getUrl(), localFilePath)) {
             //文件已经下载成功,不需要执行下载操作
             taskEntity.getDownloadListener().onComplete(localFilePath);

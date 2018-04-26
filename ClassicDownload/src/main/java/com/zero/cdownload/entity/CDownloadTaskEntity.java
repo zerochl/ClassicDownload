@@ -14,6 +14,7 @@ public class CDownloadTaskEntity {
     private boolean hasCancel = false;
     private int threadPoolType;
     private String singleThreadPoolKey;
+    private boolean needMD5Name = false;
 
     public CDownloadTaskEntity() {
     }
@@ -82,6 +83,15 @@ public class CDownloadTaskEntity {
 
     public CDownloadTaskEntity setSingleThreadPoolKey(String singleThreadPoolKey) {
         this.singleThreadPoolKey = singleThreadPoolKey;
+        return this;
+    }
+
+    public boolean isNeedMD5Name() {
+        return needMD5Name;
+    }
+
+    public CDownloadTaskEntity setNeedMD5Name(boolean needMD5Name) {
+        this.needMD5Name = needMD5Name;
         return this;
     }
 }
