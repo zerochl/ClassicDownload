@@ -1,5 +1,5 @@
 # ClassisDownload
-找了一天RxDownload的bug，解决不了，懒得去看他的实现，自己写了一套基于RxJava的下载，支持线程池管理、断点续传、与下载完成校验、控制下载中断
+找了一天RxDownload的bug，解决不了，懒得去看他的实现，自己写了一套基于RxJava的下载，支持线程池管理、断点续传、下载完成校验、下载过程中断、下载文件名MD5化（TaskEntity build时可选择是否使用）
 # 使用说明
 * 初始化
 ```language_key 
@@ -44,7 +44,9 @@ CDownload.getInstance().create("http://p5.qhimg.com/dr/72__/t01a362a049573708ae.
                 });
 CDownload.getInstance().start("http://p5.qhimg.com/dr/72__/t01a362a049573708ae.png");
 ```
-下载的URL作为下载任务的唯一桥梁
+create提供多种重载函数，同时也提供可Entity参数传入，entity支持build模式，兼容了两种风格的使用了吧。
+
+下载的URL作为下载任务的唯一key
 
 # 作者联系方式：QQ：975804495
 # 疯狂的程序员群：186305789，没准你能遇到绝影大神
