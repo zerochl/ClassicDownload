@@ -1,0 +1,15 @@
+/bin
+/gen
+/project.properties
+/.classpath
+
+/*.properties
+
+sh.exe.stackdump
+.fbprefs
+/bom.xml
+/build
+.gradle
+/*.iml
+*/*.iml
+/.idea
