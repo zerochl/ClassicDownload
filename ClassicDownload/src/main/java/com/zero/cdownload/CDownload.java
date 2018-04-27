@@ -118,7 +118,6 @@ public class CDownload {
             return;
         }
         task.setHasCancel(true);
-        task.setDownloadListener(null);
         downloadTaskList.remove(task.getUrl());
     }
 }
