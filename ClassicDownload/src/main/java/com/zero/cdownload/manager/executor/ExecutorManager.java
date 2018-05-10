@@ -45,6 +45,9 @@ public class ExecutorManager {
             case TypeConstant.THREAD_POOL_TYPE_SINGLE:
                 executor = getSingleExecutorByKey(singleThreadPoolKey);
                 break;
+            case TypeConstant.THREAD_POOL_TYPE_SINGLE_DISCARD:
+                executor = getSingleDiscardExecutor(singleThreadPoolKey);
+                break;
             default:
                 executor = getNormalExecutor();
                 break;
@@ -71,7 +74,19 @@ public class ExecutorManager {
      * @return
      */
     public static synchronized Executor getNormalExecutor(){
+        if (normalExecutor == null) {
+            init(null);
+        }
         return normalExecutor;
+    }
+
+    public static synchronized Executor getSingleDiscardExecutor(String key) {
+        Executor singleExecutor = singleExecutorMap.get(key);
+        if (null == singleExecutor) {
+            singleExecutor = ExecutorFactory.newDiscardOldThreadPool(ThreadPoolConfig.build().setCorePoolSize(1).setCapacity(1).setMaximumPoolSize(1));
+            singleExecutorMap.put(key, singleExecutor);
+        }
+        return singleExecutor;
     }
 
     public static void clear(){

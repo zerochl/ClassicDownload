@@ -23,6 +23,10 @@ public class ThreadPoolConfig {
      * keepAliveTime -当线程数大于核心时，此为终止前多余的空闲线程等待新任务的最长时间，线程池维护线程所允许的空闲时间
      */
     private int keepAliveTime = ExecutorConstant.KEEP_ALIVE_TIME;
+    /**
+     * "线程池"的阻塞队列容量
+     */
+    private int capacity = ExecutorConstant.CAPATITY;
 
     private ThreadPoolConfig() {
     }
@@ -62,6 +66,15 @@ public class ThreadPoolConfig {
 
     public ThreadPoolConfig setKeepAliveTime(int keepAliveTime) {
         this.keepAliveTime = keepAliveTime;
+        return this;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public ThreadPoolConfig setCapacity(int capacity) {
+        this.capacity = capacity;
         return this;
     }
 }

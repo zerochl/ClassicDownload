@@ -2,6 +2,7 @@ package com.zero.cdownload.manager.executor;
 
 import com.zero.cdownload.config.ThreadPoolConfig;
 
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,6 +29,17 @@ public class ExecutorFactory {
     public static Executor newFixedThreadPool(ThreadPoolConfig threadPoolConfig) {
         return new ThreadPoolExecutor(threadPoolConfig.getCorePoolSize(), threadPoolConfig.getMaximumPoolSize(), threadPoolConfig.getKeepAliveTime(), TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(), new ThreadPoolExecutor.CallerRunsPolicy());
+    }
+
+    /**
+     * 创建可丢弃之前任务的线程池
+     * 丢弃队列最前面的任务，然后重新尝试执行任务（重复此过程）
+     * @param threadPoolConfig
+     * @return
+     */
+    public static Executor newDiscardOldThreadPool(ThreadPoolConfig threadPoolConfig) {
+        return new ThreadPoolExecutor(threadPoolConfig.getCorePoolSize(), threadPoolConfig.getMaximumPoolSize(), threadPoolConfig.getKeepAliveTime(), TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<Runnable>(threadPoolConfig.getCapacity()), new ThreadPoolExecutor.DiscardOldestPolicy());
     }
 
     /**

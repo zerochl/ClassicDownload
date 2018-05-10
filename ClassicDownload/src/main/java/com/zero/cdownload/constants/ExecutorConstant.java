@@ -20,6 +20,10 @@ public class ExecutorConstant {
      * MILLISECONDS
      */
     public static final int KEEP_ALIVE_TIME = 60;
+    /**
+     * "线程池"的阻塞队列容量
+     */
+    public static final int CAPATITY = 50;
 
     public static final String SINGLE_THREAD_POOL_TYPE_DEFAULE = "DEFAULT_CLASSIC_DOWNLOAD_SINGLE_THREAD_POOL_TYPE";
 }
