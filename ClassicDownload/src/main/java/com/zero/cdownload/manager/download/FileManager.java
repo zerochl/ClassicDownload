@@ -27,6 +27,8 @@ import java.net.URL;
 
 public class FileManager {
 
+    private static final String TAG = FileManager.class.getCanonicalName();
+
     private static int connectTimeOut = ConfigConstant.TIME_DEFAULT_CONNECT_OUT;
     private static int readTimeOut = ConfigConstant.TIME_DEFAULT_READ_OUT;
 
@@ -47,13 +49,13 @@ public class FileManager {
 
     public static void startDownload(CDownloadTaskEntity taskEntity) {
         if (taskEntity == null || taskEntity.getDownloadListener() == null) {
-            Log.e("HongLi", "in startDownload task entity is null or download listener is null.");
+            Log.e(TAG, "in startDownload task entity is null or download listener is null.");
             return;
         }
         taskEntity.getDownloadListener().onPreStart();
         String localFilePath = PathUtil.getLocalFilePath(taskEntity.getUrl(), cachePath, taskEntity.isNeedMD5Name());
         String templocalFilePath = PathUtil.getLocalFilePath(taskEntity.getUrl(), cachePath + "/" + ConfigConstant.DEFAULT_TEMP_FOLDER_NAME, taskEntity.isNeedMD5Name());
-        Log.e("HongLi", "templocalFilePath:" + templocalFilePath);
+        Log.d(TAG, "templocalFilePath:" + templocalFilePath);
         if (FileUtil.isExist(localFilePath) && DownloadCheckUtil.checkFileDownloadOk(taskEntity.getUrl(), localFilePath)) {
             //文件已经下载成功,不需要执行下载操作
             taskEntity.getDownloadListener().onComplete(localFilePath);
@@ -92,7 +94,7 @@ public class FileManager {
         if (TextUtils.isEmpty(fileUrl) || TextUtils.isEmpty(localFilePath) || taskEntity == null || taskEntity.getDownloadListener() == null) {
             return false;
         }
-        Log.e("HongLi", "start download file:" + fileUrl);
+        Log.d(TAG, "start download file:" + fileUrl);
         File file = new File(localFilePath);
         long size = 0;
         if (file.exists()) {
@@ -127,7 +129,7 @@ public class FileManager {
                 int len = -1;
                 while ((len = in.read(b)) != -1) {
                     if (taskEntity.isHasCancel()) {
-                        Log.e("HongLi", "cancel download:" + fileUrl);
+                        Log.e(TAG, "cancel download:" + fileUrl);
                         taskEntity.getDownloadListener().onCancel();
                         break;
                     }
@@ -138,14 +140,15 @@ public class FileManager {
                 out.close();
                 downloadSuccess = true;
             } else {
-                //不支持断点续传
+                //不支持断点续传，先删除缓存文件
+                FileUtil.deleteFile(localFilePath);
                 downloadSuccess = downloadFileNormal(fileUrl, localFilePath, taskEntity);
             }
             con.disconnect();
         } catch (MalformedURLException e) {
             e.printStackTrace();
             downloadSuccess = downloadFileNormal(fileUrl, localFilePath, taskEntity);
-            Log.e("HongLi", "error url:" + fileUrl);
+            Log.e(TAG, "error url:" + fileUrl);
         } catch (IOException e) {
             e.printStackTrace();
             downloadSuccess = downloadFileNormal(fileUrl, localFilePath, taskEntity);
@@ -164,11 +167,11 @@ public class FileManager {
                 con.disconnect();
             }
             //通过文件长度来判断下载是否成功
-            if (!downloadSuccess || !file.exists() || maxSize == 0 || file.length() != maxSize) {
+            if (!downloadSuccess || !file.exists()) {
                 downloadSuccess = false;
             }
         }
-        Log.e("HongLi", "end download file:" + fileUrl);
+        Log.d(TAG, "end download file:" + fileUrl);
         return downloadSuccess;
     }
 
@@ -221,7 +224,7 @@ public class FileManager {
                 int len = -1;
                 while ((len = in.read(b)) != -1) {
                     if (taskEntity.isHasCancel()) {
-                        Log.e("HongLi", "cancel download:" + fileUrl);
+                        Log.e(TAG, "cancel download:" + fileUrl);
                         taskEntity.getDownloadListener().onCancel();
                         break;
                     }
@@ -256,7 +259,7 @@ public class FileManager {
             if (null != con) {
                 con.disconnect();
             }
-            if (!downloadSuccess || !file.exists() || maxSize == 0 || file.length() != maxSize) {
+            if (!downloadSuccess || !file.exists()) {
                 downloadSuccess = false;
             }
         }
