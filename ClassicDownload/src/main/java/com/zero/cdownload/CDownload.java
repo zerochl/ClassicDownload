@@ -80,6 +80,7 @@ public class CDownload {
         final CDownloadTaskEntity task = downloadTaskList.get(url);
         if (task == null) {
             Log.e("HongLi", "in start there is not task in task list");
+            return;
         }
         Observable
                 .create(new ObservableOnSubscribe<CDownloadTaskEntity>() {
@@ -108,6 +109,7 @@ public class CDownload {
         CDownloadTaskEntity task = downloadTaskList.get(url);
         if (task == null) {
             Log.e("HongLi", "in stop there is not task in task list");
+            return;
         }
         removeTask(task);
     }
