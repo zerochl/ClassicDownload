@@ -1,6 +1,9 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
+// JitPack Maven
+apply plugin: 'com.github.dcendents.android-maven'
+// Your Group
+group='com.github.zerochl'
 
 version = "0.0.1"
 android {
@@ -22,7 +25,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
@@ -34,7 +39,12 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
     implementation 'io.reactivex.rxjava2:rxjava:2.1.12'
 }
-
+//publish {
+//    userOrg = 'novoda'
+//    groupId = 'com.novoda'
+//    artifactId = 'bintray-release'
+//    publishVersion = '0.6.1'
+//}
 def siteUrl = 'https://github.com/zerochl/ClassisDownload'   // 项目的主页
 def gitUrl = 'git@github.com:zerochl/ClassisDownload.git'   // Git仓库的url
 group = "com.zero.cdownload"            // Maven Group ID for the artifact，一般填你唯一的包名
