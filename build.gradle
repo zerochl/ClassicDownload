@@ -22,12 +22,10 @@ buildscript {
 //apply plugin: 'com.novoda.bintray-release'
 allprojects {
     repositories {
+        maven { url 'https://jitpack.io' }
         google()
         jcenter()
     }
-}
-
-allprojects {
     tasks.withType(Javadoc) {
         options.addStringOption('Xdoclint:none', '-quiet')
         options.addStringOption('encoding', 'UTF-8')

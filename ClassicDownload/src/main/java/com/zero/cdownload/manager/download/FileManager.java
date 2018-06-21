@@ -127,10 +127,12 @@ public class FileManager {
                 currentSize = size;
                 byte[] b = new byte[bufferSize];
                 int len = -1;
+                boolean hasCancel = false;
                 while ((len = in.read(b)) != -1) {
                     if (taskEntity.isHasCancel()) {
                         Log.e(TAG, "cancel download:" + fileUrl);
                         taskEntity.getDownloadListener().onCancel();
+                        hasCancel = true;
                         break;
                     }
                     out.write(b, 0, len);
@@ -138,7 +140,7 @@ public class FileManager {
                     taskEntity.getDownloadListener().onProgress(maxSize, currentSize);
                 }
                 out.close();
-                downloadSuccess = true;
+                downloadSuccess = !hasCancel;
             } else {
                 //不支持断点续传，先删除缓存文件
                 FileUtil.deleteFile(localFilePath);
@@ -222,10 +224,12 @@ public class FileManager {
                 currentSize = size;
                 byte[] b = new byte[bufferSize];
                 int len = -1;
+                boolean hasCancel = false;
                 while ((len = in.read(b)) != -1) {
                     if (taskEntity.isHasCancel()) {
                         Log.e(TAG, "cancel download:" + fileUrl);
                         taskEntity.getDownloadListener().onCancel();
+                        hasCancel = true;
                         break;
                     }
                     out.write(b, 0, len);
@@ -236,7 +240,7 @@ public class FileManager {
 //                    fileAttr[0].setEtag(con.getLastModified() + "");
 //                }
                 out.close();
-                downloadSuccess = true;
+                downloadSuccess = !hasCancel;
             } else {
                 downloadSuccess = false;
             }
