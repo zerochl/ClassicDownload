@@ -13,7 +13,7 @@ allprojects {
 	}
 依赖添加：
 dependencies {
-	        implementation 'com.github.zerochl:weex-android:0.18.1'
+	        implementation 'com.github.zerochl:ClassicDownload:1.0.2'
 	}
 ```
 
