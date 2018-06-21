@@ -77,7 +77,7 @@ public class FileManager {
                     FileUtil.deleteFile(templocalFilePath);
                     taskEntity.getDownloadListener().onError("download success but check error.");
                 }
-            } else {
+            } else if (!taskEntity.isHasCancel()) {
                 taskEntity.getDownloadListener().onError("download error.");
             }
         }
