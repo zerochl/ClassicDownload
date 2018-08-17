@@ -8,7 +8,7 @@ package com.zero.cdownload.listener;
 
 public interface CDownloadListener {
     void onPreStart();
-    void onProgress(long maxSIze, long currentSize);
+    void onProgress(long maxSize, long currentSize);
     void onComplete(String localFilePath);
     void onError(String errorMessage);
     void onCancel();
