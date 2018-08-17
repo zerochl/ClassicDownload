@@ -114,7 +114,7 @@ public class FileManager {
             // 设置下载区间
             con.setRequestProperty("range", "bytes=" + size + "-");
             con.connect();
-            maxSize = con.getContentLength();
+            maxSize = con.getContentLength() + size;
             long currentSize = 0;
             // 只要断点下载，返回的已经不是200，206
             int code = con.getResponseCode();
