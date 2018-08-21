@@ -1,5 +1,7 @@
 package com.zero.cdownload.config;
 
+import com.zero.cdownload.constants.ConfigConstant;
+
 /**
  * Created by zero on 2018/4/26.
  *
@@ -17,6 +19,8 @@ public class CDownloadConfig {
     private ThreadPoolConfig ioThreadPoolConfig;
 
     private ConnectConfig connectConfig;
+    // 是否需要检查下载文件的大小
+    private boolean needCheckFileLength = ConfigConstant.NEED_CHECK_DOWNLOAD_FILE_LENGTH;
 
     private CDownloadConfig(){
     }
@@ -67,6 +71,15 @@ public class CDownloadConfig {
 
     public CDownloadConfig setConnectConfig(ConnectConfig connectConfig) {
         this.connectConfig = connectConfig;
+        return this;
+    }
+
+    public boolean isNeedCheckFileLength() {
+        return needCheckFileLength;
+    }
+
+    public CDownloadConfig setNeedCheckFileLength(boolean needCheckFileLength) {
+        this.needCheckFileLength = needCheckFileLength;
         return this;
     }
 }

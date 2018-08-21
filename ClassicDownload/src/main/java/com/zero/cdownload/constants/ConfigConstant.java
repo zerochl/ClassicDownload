@@ -15,4 +15,6 @@ public class ConfigConstant {
     public static final int TIME_DEFAULT_READ_OUT = 20000;
 
     public static final int BUFFER_DEFAULT_DOWNLOAD = 2048;
+
+    public static final boolean NEED_CHECK_DOWNLOAD_FILE_LENGTH = true;
 }

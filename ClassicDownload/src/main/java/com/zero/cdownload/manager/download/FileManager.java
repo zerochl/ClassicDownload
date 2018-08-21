@@ -31,6 +31,7 @@ public class FileManager {
 
     private static int connectTimeOut = ConfigConstant.TIME_DEFAULT_CONNECT_OUT;
     private static int readTimeOut = ConfigConstant.TIME_DEFAULT_READ_OUT;
+    private static boolean needCheckFileLength = ConfigConstant.NEED_CHECK_DOWNLOAD_FILE_LENGTH;
 
     private static int bufferSize = ConfigConstant.BUFFER_DEFAULT_DOWNLOAD;
     private static String cachePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/com/zero/cdownload";
@@ -41,6 +42,7 @@ public class FileManager {
             connectTimeOut = downloadConfig.getConnectConfig().getConnectTimeOut() != 0 ? downloadConfig.getConnectConfig().getConnectTimeOut() : ConfigConstant.TIME_DEFAULT_CONNECT_OUT;
             readTimeOut = downloadConfig.getConnectConfig().getReadTimeOut() != 0 ? downloadConfig.getConnectConfig().getReadTimeOut() : ConfigConstant.TIME_DEFAULT_READ_OUT;
             bufferSize = downloadConfig.getConnectConfig().getReadBufferSize() != 0 ? downloadConfig.getConnectConfig().getReadBufferSize() : ConfigConstant.BUFFER_DEFAULT_DOWNLOAD;
+            needCheckFileLength = downloadConfig.isNeedCheckFileLength();
         }
         if (downloadConfig != null && !TextUtils.isEmpty(downloadConfig.getDiskCachePath())) {
             cachePath = downloadConfig.getDiskCachePath();
@@ -56,7 +58,7 @@ public class FileManager {
         String localFilePath = PathUtil.getLocalFilePath(taskEntity.getUrl(), cachePath, taskEntity.isNeedMD5Name());
         String templocalFilePath = PathUtil.getLocalFilePath(taskEntity.getUrl(), cachePath + "/" + ConfigConstant.DEFAULT_TEMP_FOLDER_NAME, taskEntity.isNeedMD5Name());
         Log.d(TAG, "templocalFilePath:" + templocalFilePath);
-        if (FileUtil.isExist(localFilePath) && DownloadCheckUtil.checkFileDownloadOk(taskEntity.getUrl(), localFilePath)) {
+        if (FileUtil.isExist(localFilePath) && DownloadCheckUtil.checkFileDownloadOk(taskEntity.getUrl(), localFilePath, needCheckFileLength)) {
             //文件已经下载成功,不需要执行下载操作
             taskEntity.getDownloadListener().onComplete(localFilePath);
         } else {
@@ -64,7 +66,7 @@ public class FileManager {
             FileUtil.deleteFile(localFilePath);
             boolean downloadResult = downloadFile(taskEntity.getUrl(), templocalFilePath, taskEntity);
             if (downloadResult) {
-                if (DownloadCheckUtil.checkFileDownloadOk(taskEntity.getUrl(), templocalFilePath)) {
+                if (DownloadCheckUtil.checkFileDownloadOk(taskEntity.getUrl(), templocalFilePath, needCheckFileLength)) {
                     //执行文件替换操作
                     synchronized (FileManager.class) {
                         //文件不存在才执行替换操作
