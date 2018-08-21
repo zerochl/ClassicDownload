@@ -73,7 +73,8 @@ public class CDownload {
             Log.e("HongLi", "downloadTaskEntity is null.");
             return;
         }
-        create(downloadTaskEntity.getUrl(), downloadTaskEntity.getThreadPoolType(), downloadTaskEntity.getSingleThreadPoolKey(), downloadTaskEntity.getDownloadListener());
+//        create(downloadTaskEntity.getUrl(), downloadTaskEntity.getThreadPoolType(), downloadTaskEntity.getSingleThreadPoolKey(), downloadTaskEntity.getDownloadListener());
+        downloadTaskList.put(downloadTaskEntity.getUrl(), downloadTaskEntity);
     }
 
     public void start(String url) {
