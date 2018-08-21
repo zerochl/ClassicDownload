@@ -38,13 +38,16 @@ public class FileManager {
 
     public static void init(CDownloadConfig downloadConfig) {
         HTTPSTrustManager.allowAllSSL();
-        if (downloadConfig != null && downloadConfig.getConnectConfig() != null) {
+        if (null == downloadConfig) {
+            return;
+        }
+        needCheckFileLength = downloadConfig.isNeedCheckFileLength();
+        if (downloadConfig.getConnectConfig() != null) {
             connectTimeOut = downloadConfig.getConnectConfig().getConnectTimeOut() != 0 ? downloadConfig.getConnectConfig().getConnectTimeOut() : ConfigConstant.TIME_DEFAULT_CONNECT_OUT;
             readTimeOut = downloadConfig.getConnectConfig().getReadTimeOut() != 0 ? downloadConfig.getConnectConfig().getReadTimeOut() : ConfigConstant.TIME_DEFAULT_READ_OUT;
             bufferSize = downloadConfig.getConnectConfig().getReadBufferSize() != 0 ? downloadConfig.getConnectConfig().getReadBufferSize() : ConfigConstant.BUFFER_DEFAULT_DOWNLOAD;
-            needCheckFileLength = downloadConfig.isNeedCheckFileLength();
         }
-        if (downloadConfig != null && !TextUtils.isEmpty(downloadConfig.getDiskCachePath())) {
+        if (!TextUtils.isEmpty(downloadConfig.getDiskCachePath())) {
             cachePath = downloadConfig.getDiskCachePath();
         }
     }

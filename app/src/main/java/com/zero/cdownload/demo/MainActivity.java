@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 //                });
 //                RxDownload.INSTANCE.start("http://p5.qhimg.com/dr/72__/t01a362a049573708ae.png").subscribe();
 
-                CDownload.getInstance().create("https://assets.mimikko.cn/201804261844/f68dbc99fc8d3edde679ec14ef62df7a/servantVoice/a08605288baa86aba138563fc4da8c84.zip", new CDownloadListener() {
+                CDownload.getInstance().create("https://oss02.bihu.com/art/AC7356E7C418549577FB57889F02A31C.txt", new CDownloadListener() {
                     @Override
                     public void onPreStart() {
                         Log.e("HongLi", "onPreStart");
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(String errorMessage) {
-                        Log.e("HongLi", "onError");
+                        Log.e("HongLi", "onError errorMessage:" + errorMessage);
                     }
 
                     @Override
@@ -72,10 +72,9 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("HongLi", "onCancel");
                     }
                 });
-                CDownload.getInstance().start("https://assets.mimikko.cn/201804261844/f68dbc99fc8d3edde679ec14ef62df7a/servantVoice/a08605288baa86aba138563fc4da8c84.zip");
-
+                CDownload.getInstance().start("https://oss02.bihu.com/art/AC7356E7C418549577FB57889F02A31C.txt");
             }
-        }, 5000);
+        }, 0);
 
     }
 }
