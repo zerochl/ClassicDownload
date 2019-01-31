@@ -115,6 +115,10 @@ public class CDownload {
         removeTask(task);
     }
 
+    public CDownloadTaskEntity getTaskByUrl(String url) {
+        return downloadTaskList.get(url);
+    }
+
     private void removeTask(CDownloadTaskEntity task){
         if (task == null) {
             Log.e("HongLi", "in removeTask task is null");
