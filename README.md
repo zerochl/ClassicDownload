@@ -1,6 +1,7 @@
 ### 作者联系方式：QQ：975804495
 ### 疯狂的程序员群：186305789，没准你能遇到绝影大神
-### 作者个人兴趣网站，[zerochl接码平台](http://xinghai.party)
+### 作者个人兴趣网站，[zerochl接码平台](https://xinghai.party)
+### 作者个人兴趣网站，[猿指](https://blog.xinghai.party)
 # ClassisDownload
 找了一天RxDownload的bug，解决不了，懒得去看他的实现，自己写了一套基于RxJava的下载，支持线程池管理、断点续传、下载完成校验、下载过程中断、下载文件名MD5化（TaskEntity build时可选择是否使用）
 # 使用说明
