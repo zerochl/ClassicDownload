@@ -7,6 +7,7 @@ import android.util.Log;
 import com.zero.cdownload.config.CDownloadConfig;
 import com.zero.cdownload.constants.ConfigConstant;
 import com.zero.cdownload.entity.CDownloadTaskEntity;
+import com.zero.cdownload.entity.DownLoadEntity;
 import com.zero.cdownload.util.DownloadCheckUtil;
 import com.zero.cdownload.util.FileUtil;
 import com.zero.cdownload.util.PathUtil;
@@ -59,27 +60,27 @@ public class FileManager {
         }
         taskEntity.getDownloadListener().onPreStart();
         String localFilePath = PathUtil.getLocalFilePath(taskEntity.getUrl(), cachePath, taskEntity.isNeedMD5Name());
-        String templocalFilePath = PathUtil.getLocalFilePath(taskEntity.getUrl(), cachePath + "/" + ConfigConstant.DEFAULT_TEMP_FOLDER_NAME, taskEntity.isNeedMD5Name());
-        Log.d(TAG, "templocalFilePath:" + templocalFilePath);
+        String tempLocalFilePath = PathUtil.getLocalFilePath(taskEntity.getUrl(), cachePath + "/" + ConfigConstant.DEFAULT_TEMP_FOLDER_NAME, taskEntity.isNeedMD5Name());
+        Log.d(TAG, "templocalFilePath:" + tempLocalFilePath);
         if (FileUtil.isExist(localFilePath) && DownloadCheckUtil.checkFileDownloadOk(taskEntity.getUrl(), localFilePath, needCheckFileLength)) {
             //文件已经下载成功,不需要执行下载操作
             taskEntity.getDownloadListener().onComplete(localFilePath);
         } else {
             //先删除本地文件，如果有
             FileUtil.deleteFile(localFilePath);
-            boolean downloadResult = downloadFile(taskEntity.getUrl(), templocalFilePath, taskEntity);
-            if (downloadResult) {
-                if (DownloadCheckUtil.checkFileDownloadOk(taskEntity.getUrl(), templocalFilePath, needCheckFileLength)) {
+            DownLoadEntity downLoadEntity = downloadFile(taskEntity.getUrl(), localFilePath, tempLocalFilePath, taskEntity, true);
+            if (downLoadEntity.isSuccessful()) {
+                if (DownloadCheckUtil.checkFileDownloadOk(taskEntity.getUrl(), downLoadEntity.getTempLocalFilePath(), needCheckFileLength)) {
                     //执行文件替换操作
                     synchronized (FileManager.class) {
                         //文件不存在才执行替换操作
-                        FileUtil.rename(templocalFilePath, localFilePath);
-                        FileUtil.deleteFile(templocalFilePath);
-                        taskEntity.getDownloadListener().onComplete(localFilePath);
+                        FileUtil.rename(downLoadEntity.getTempLocalFilePath(), downLoadEntity.getLocalFilePath());
+                        FileUtil.deleteFile(downLoadEntity.getTempLocalFilePath());
+                        taskEntity.getDownloadListener().onComplete(downLoadEntity.getLocalFilePath());
                     }
                 } else {
                     //下载成功，但是校验失败
-                    FileUtil.deleteFile(templocalFilePath);
+                    FileUtil.deleteFile(downLoadEntity.getTempLocalFilePath());
                     taskEntity.getDownloadListener().onError("download success but check error.");
                 }
             } else if (!taskEntity.isHasCancel()) {
@@ -92,15 +93,15 @@ public class FileManager {
      * 断点续传下载文件
      *
      * @param fileUrl
-     * @param localFilePath
+     * @param tempLocalFilePath
      * @return
      */
-    public static boolean downloadFile(String fileUrl, String localFilePath, CDownloadTaskEntity taskEntity) {
-        if (TextUtils.isEmpty(fileUrl) || TextUtils.isEmpty(localFilePath) || taskEntity == null || taskEntity.getDownloadListener() == null) {
-            return false;
+    public static DownLoadEntity downloadFile(String fileUrl, String localFilePath, String tempLocalFilePath, CDownloadTaskEntity taskEntity, boolean redirectsFirst) {
+        if (TextUtils.isEmpty(fileUrl) || TextUtils.isEmpty(tempLocalFilePath) || taskEntity == null || taskEntity.getDownloadListener() == null) {
+            return new DownLoadEntity(localFilePath, tempLocalFilePath, false);
         }
         Log.d(TAG, "start download file:" + fileUrl);
-        File file = new File(localFilePath);
+        File file = new File(tempLocalFilePath);
         long size = 0;
         if (file.exists()) {
             size = file.length();
@@ -123,45 +124,55 @@ public class FileManager {
             long currentSize = 0;
             // 只要断点下载，返回的已经不是200，206
             int code = con.getResponseCode();
-            if (code == 206) {
-                InputStream in = con.getInputStream();
-                // int serverSize = con.getContentLength();
-                // 必须要使用
-                out = new RandomAccessFile(file, "rw");
-                out.seek(size);
-                currentSize = size;
-                byte[] b = new byte[bufferSize];
-                int len = -1;
-                boolean hasCancel = false;
-                while ((len = in.read(b)) != -1) {
-                    if (taskEntity.isHasCancel()) {
-                        Log.e(TAG, "cancel download:" + fileUrl);
-                        taskEntity.getDownloadListener().onCancel();
-                        hasCancel = true;
-                        break;
-                    }
-                    out.write(b, 0, len);
-                    currentSize += len;
-                    taskEntity.getDownloadListener().onProgress(maxSize, currentSize);
-                }
-                out.close();
-                downloadSuccess = !hasCancel;
+            if (redirectsFirst && taskEntity.isSupportRedirects() && (code == 302 || code == 301)) {
+                String location = con.getHeaderField("Location");
+                Log.d(TAG, "redirects url:" + location);
+                taskEntity.setUrl(location);
+                con.disconnect();
+                localFilePath = PathUtil.getLocalFilePath(location, cachePath, taskEntity.isNeedMD5Name());
+                tempLocalFilePath = PathUtil.getLocalFilePath(location, cachePath + "/" + ConfigConstant.DEFAULT_TEMP_FOLDER_NAME, taskEntity.isNeedMD5Name());
+                return downloadFile(location, localFilePath, tempLocalFilePath, taskEntity, false);
             } else {
-                //不支持断点续传，先删除缓存文件
-                FileUtil.deleteFile(localFilePath);
-                downloadSuccess = downloadFileNormal(fileUrl, localFilePath, taskEntity);
+                if (code == 206) {
+                    InputStream in = con.getInputStream();
+                    // int serverSize = con.getContentLength();
+                    // 必须要使用
+                    out = new RandomAccessFile(file, "rw");
+                    out.seek(size);
+                    currentSize = size;
+                    byte[] b = new byte[bufferSize];
+                    int len = -1;
+                    boolean hasCancel = false;
+                    while ((len = in.read(b)) != -1) {
+                        if (taskEntity.isHasCancel()) {
+                            Log.e(TAG, "cancel download:" + fileUrl);
+                            taskEntity.getDownloadListener().onCancel();
+                            hasCancel = true;
+                            break;
+                        }
+                        out.write(b, 0, len);
+                        currentSize += len;
+                        taskEntity.getDownloadListener().onProgress(maxSize, currentSize);
+                    }
+                    out.close();
+                    downloadSuccess = !hasCancel;
+                } else {
+                    //不支持断点续传，先删除缓存文件
+                    FileUtil.deleteFile(tempLocalFilePath);
+                    downloadSuccess = downloadFileNormal(fileUrl, tempLocalFilePath, taskEntity);
+                }
+                con.disconnect();
             }
-            con.disconnect();
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            downloadSuccess = downloadFileNormal(fileUrl, localFilePath, taskEntity);
+            downloadSuccess = downloadFileNormal(fileUrl, tempLocalFilePath, taskEntity);
             Log.e(TAG, "error url:" + fileUrl);
         } catch (IOException e) {
             e.printStackTrace();
-            downloadSuccess = downloadFileNormal(fileUrl, localFilePath, taskEntity);
+            downloadSuccess = downloadFileNormal(fileUrl, tempLocalFilePath, taskEntity);
         } catch (Exception e) {
             e.printStackTrace();
-            downloadSuccess = downloadFileNormal(fileUrl, localFilePath, taskEntity);
+            downloadSuccess = downloadFileNormal(fileUrl, tempLocalFilePath, taskEntity);
         } finally {
             try {
                 if (null != out) {
@@ -179,7 +190,7 @@ public class FileManager {
             }
         }
         Log.d(TAG, "end download file:" + fileUrl);
-        return downloadSuccess;
+        return new DownLoadEntity(localFilePath, tempLocalFilePath, downloadSuccess);
     }
 
     /**

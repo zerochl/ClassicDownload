@@ -15,6 +15,7 @@ public class CDownloadTaskEntity {
     private int threadPoolType;
     private String singleThreadPoolKey;
     private boolean needMD5Name = false;
+    private boolean supportRedirects = false;
 
     public CDownloadTaskEntity() {
     }
@@ -37,7 +38,7 @@ public class CDownloadTaskEntity {
         this.singleThreadPoolKey = singleThreadPoolKey;
     }
 
-    public static CDownloadTaskEntity build(){
+    public static CDownloadTaskEntity build() {
         return new CDownloadTaskEntity();
     }
 
@@ -92,6 +93,21 @@ public class CDownloadTaskEntity {
 
     public CDownloadTaskEntity setNeedMD5Name(boolean needMD5Name) {
         this.needMD5Name = needMD5Name;
+        return this;
+    }
+
+    public boolean isSupportRedirects() {
+        return supportRedirects;
+    }
+
+    /**
+     * 支持重定向
+     *
+     * @param supportRedirects 支持重定向
+     * @return CDownloadTaskEntity
+     */
+    public CDownloadTaskEntity setSupportRedirects(boolean supportRedirects) {
+        this.supportRedirects = supportRedirects;
         return this;
     }
 }
