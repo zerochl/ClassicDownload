@@ -17,7 +17,7 @@ allprojects {
 	}
 依赖添加：
 dependencies {
-	        implementation 'com.github.zerochl:ClassicDownload:1.0.7'
+	        implementation 'com.github.zerochl:ClassicDownload:1.0.9'
 	}
 ```
 
