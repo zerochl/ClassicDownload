@@ -123,6 +123,9 @@ public class FileManager {
             long currentSize = 0;
             // 只要断点下载，返回的已经不是200，206
             int code = con.getResponseCode();
+            if (code == 301 || code == 302) {
+                return downloadFile(con.getHeaderField("Location"), localFilePath, taskEntity);
+            }
             if (code == 206) {
                 InputStream in = con.getInputStream();
                 // int serverSize = con.getContentLength();
@@ -219,6 +222,9 @@ public class FileManager {
             maxSize = con.getContentLength();
             long currentSize = 0;
             int code = con.getResponseCode();// 只要断点下载，返回的已经不是200，206
+            if (code == 301 || code == 302) {
+                return downloadFile(con.getHeaderField("Location"), localFilePath, taskEntity);
+            }
             // if(code==206){
             if (code == 200) {
                 InputStream in = con.getInputStream();
